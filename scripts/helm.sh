@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Copyright 2020 The arhat.dev Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include scripts/lint.mk
+gen() {
+  target="$1"
 
-NAMESPACE ?= default
-export NAMESPACE
+  mkdir -p build
+  helm template "${target}" "charts/${target}" --include-crds --namespace "${NAMESPACE}" --debug | tee "build/${target}.yaml"
+}
 
-gen.calico:
-	sh scripts/helm.sh $@
-
-gen.all: \
-	gen.calico
+# shellcheck disable=SC2068
+gen $@

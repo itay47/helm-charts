@@ -23,3 +23,12 @@ jobs:
     - name: Lint
       run: |
         make lint.all
+
+    - name: Install helm
+      uses: azure/setup-helm@v1
+      with:
+        version: latest
+
+    - name: Test Gerneration
+      run: |
+        make gen.all
