@@ -1,7 +1,6 @@
 # helm-charts
 
 [![CI](https://github.com/arhat-dev/template-repo/workflows/CI/badge.svg)](https://github.com/arhat-dev/template-repo/actions?query=workflow%3ACI)
-[![codecov](https://codecov.io/gh/arhat-dev/template-repo/branch/master/graph/badge.svg)](https://codecov.io/gh/arhat-dev/template-repo)
 
 Custom helm charts to ease your life with `Kubernetes`
 
