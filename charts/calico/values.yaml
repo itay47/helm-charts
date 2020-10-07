@@ -40,9 +40,12 @@ node:
     tag: ""
   extraEnvs: []
   # https://docs.projectcalico.org/reference/node/configuration#ip-setting
-  autodetection:
-    ipv4:
-      method:
+  peering:
+    autoDetect:
+      ipv4:
+        method: first-found
+      ipv6:
+        method: first-found
 
 cni:
   image:
