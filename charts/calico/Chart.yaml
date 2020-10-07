@@ -3,4 +3,4 @@ name: calico
 description: Calico helm chart for easy customization
 type: application
 version: 0.1.0
-appVersion: v3.16.1
+appVersion: v3.16.2
