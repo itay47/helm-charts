@@ -17,7 +17,7 @@ etcd:
 kubeControllers:
   image:
     repo: docker.io/calico/kube-controllers
-    tag: v3.16.2
+    tag: ""
   replicas: 1
   extraEnvs: []
   # - name: foo
@@ -27,7 +27,7 @@ typha:
   enabled: false
   image:
     repo: docker.io/calico/typha
-    tag: v3.16.2
+    tag: ""
   replicas: 1
   logLevel: info # debug, info
   extraEnvs: []
@@ -37,7 +37,7 @@ typha:
 node:
   image:
     repo: docker.io/calico/node
-    tag: v3.16.2
+    tag: ""
   extraEnvs: []
   # https://docs.projectcalico.org/reference/node/configuration#ip-setting
   autodetection:
@@ -47,14 +47,14 @@ node:
 cni:
   image:
     repo: docker.io/calico/cni
-    tag: v3.16.2
+    tag: ""
   ipam: "" # host-local or none
   extraEnvs: []
 
 flexVolumeDriver:
   image:
     repo: docker.io/calico/pod2daemon-flexvol
-    tag: v3.16.2
+    tag: ""
 
 # Pod IPs will be chosen from following pools
 podIPPools:
