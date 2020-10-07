@@ -1,63 +1,68 @@
-# datastore type: `kubernetes` or `etcd`
-datastore: kubernetes
-
-# etcd configuration if storage set to etcd
-etcd:
-  endpoints: [] # string array
-  # - "etcdhost-1:2379"
-  # - "etcdhost-2:2379"
-  # - "etcdhost-3:2379"
-  tls:
-    enabled: false
-    # pem encoded cert data
-    caCert: ""
-    cert: ""
-    key: ""
+bpf:
+  enabled: true
+  kubernetesAPI:
+    host: kubernetes.local
+    port: 6443
 
 kubeControllers:
   image:
     repo: docker.io/calico/kube-controllers
     tag: ""
-  replicas: 1
-  extraEnvs: []
-  # - name: foo
-  #   value: bar
+  affinity: []
+  nodeSelector:
+    kubernetes.io/os: linux
+  tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  # log level, one of [debug, info, warning, error]
+  logLevel: info
 
 typha:
-  enabled: false
+  enabled: true
   image:
     repo: docker.io/calico/typha
     tag: ""
+  # Number of Typha replicas.
+  #
+  # We recommend using Typha if you have more than 50 nodes. Above 100 nodes it is essential
+  # (when using the Kubernetes datastore). Use one replica for every 100-200 nodes. In
+  # production, we recommend running at least 3 replicas to reduce the impact of rolling upgrade.
   replicas: 1
-  logLevel: info # debug, info
-  extraEnvs: []
-  # - name: foo
-  #   value: bar
-
-node:
-  image:
-    repo: docker.io/calico/node
-    tag: ""
-  extraEnvs: []
-  # https://docs.projectcalico.org/reference/node/configuration#ip-setting
-  peering:
-    autoDetect:
-      ipv4:
-        method: first-found
-      ipv6:
-        method: first-found
-
-cni:
-  image:
-    repo: docker.io/calico/cni
-    tag: ""
-  ipam: "" # host-local or none
-  extraEnvs: []
-
-flexVolumeDriver:
-  image:
-    repo: docker.io/calico/pod2daemon-flexvol
-    tag: ""
+  affinity: []
+  nodeSelector:
+    kubernetes.io/os: linux
+  tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  # log level, one of [debug, info, warning, error, fatal]
+  logLevel: info
+  # use kubernetes assigned node pod cidr rather than cidr from ip pool
+  useNodePodCIDR: false
+  port: 5473
+  metrics:
+    enabled: true
+    port: 9093
+  tls:
+    # enable tls authentication between typha and felix
+    enabled: true
+    # the Common Name that Felix’s certificate must have
+    #
+    # either felixCommonName or felixURISAN will be used if tls enabled
+    felixCommonName: ""
+    # a SPIFFE string that identifies Felix, all Felix instances should use the same SPIFFE ID
+    # https://github.com/spiffe/spiffe/blob/master/standards/SPIFFE-ID.md#2-spiffe-identity
+    #
+    # either felixCommonName or felixURISAN will be used if tls enabled
+    felixURISAN: spiffe://trust-domain-name/path
+    # pem encoded tls certificate authority for felix tls auth
+    ca: ""
+    # pem encoded tls certificate pair for felix tls auth
+    cert: ""
+    key: ""
 
 # Pod IPs will be chosen from following pools
 podIPPools:

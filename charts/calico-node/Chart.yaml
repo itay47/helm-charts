@@ -1,0 +1,6 @@
+apiVersion: v2
+name: calico-node
+description: BGP only calico node deployment helm chart
+type: application
+version: 0.1.0
+appVersion: v3.16.2

@@ -1,20 +1,13 @@
-{{- if and (eq .Values.datastore "kubernetes") .Values.typha.enabled -}}
-# This manifest creates a Deployment of Typha to back the above service.
+{{- if .Values.typha.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "calico.typha.fullname" . }}
-  namespace: kube-system
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "calico.typha.labels" . | nindent 4 }}
 spec:
-  # Number of Typha replicas. To enable Typha, set this to a non-zero value *and* set the
-  # typha_service_name variable in the calico-config ConfigMap above.
-  #
-  # We recommend using Typha if you have more than 50 nodes. Above 100 nodes it is essential
-  # (when using the Kubernetes datastore). Use one replica for every 100-200 nodes. In
-  # production, we recommend running at least 3 replicas to reduce the impact of rolling upgrade.
-  replicas: {{ .Values.typha.replicas }}
+  replicas: {{ .Values.typha.replicas | default 1 }}
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -26,85 +19,111 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
     spec:
-      nodeSelector:
-        kubernetes.io/os: linux
-      hostNetwork: true
-      tolerations:
-      # Mark the pod as a critical add-on for rescheduling.
-      - key: CriticalAddonsOnly
-        operator: Exists
       # Since Calico can't network a pod until Typha is up, we need to run Typha itself
       # as a host-networked pod.
-      serviceAccountName: calico-node
+      hostNetwork: true
+      {{- with .Values.typha.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.typha.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.typha.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "calico.typha.fullname" . }}
       priorityClassName: system-cluster-critical
       # fsGroup allows using projected serviceaccount tokens as described here kubernetes/kubernetes#82573
       securityContext:
         fsGroup: 65534
+      {{- if .Values.typha.tls.enabled }}
+      volumes:
+      - name: felix-typha-tls
+        secret:
+          secretName: {{ include "calico.typha.fullname" . }}
+          defaultMode: 0400
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
       containers:
-      - image: {{ .Values.typha.image.repo }}:{{ .Values.typha.image.tag | default .Chart.AppVersion }}
-        name: calico-typha
-        ports:
-        - containerPort: 5473
-          name: calico-typha
-          protocol: TCP
-        env:
-        {{- if .Values.bpf }}
-          # Overrides for kubernetes API server host/port. Needed in BPF mode.
-          - name: KUBERNETES_SERVICE_HOST
-            valueFrom:
-              configMapKeyRef:
-                name: calico-config
-                key: kubernetes_service_host
-          - name: KUBERNETES_SERVICE_PORT
-            valueFrom:
-              configMapKeyRef:
-                name: calico-config
-                key: kubernetes_service_port
-        {{- end }}
-          # Enable "info" logging by default. Can be set to "debug" to increase verbosity.
-          - name: TYPHA_LOGSEVERITYSCREEN
-            value: {{ .Values.typha.logLevel | quote }}
-          # Disable logging to file and syslog since those don't make sense in Kubernetes.
-          - name: TYPHA_LOGFILEPATH
-            value: "none"
-          - name: TYPHA_LOGSEVERITYSYS
-            value: "none"
-          # Monitor the Kubernetes API to find the number of running instances and rebalance
-          # connections.
-          - name: TYPHA_CONNECTIONREBALANCINGMODE
-            value: "kubernetes"
-          - name: TYPHA_DATASTORETYPE
-            value: "kubernetes"
-          - name: TYPHA_HEALTHENABLED
-            value: "true"
-        {{- if eq .Values.cni.ipam "host-local" }}
-          # Configure route aggregation based on pod CIDR.
-          - name: USE_POD_CIDR
-            value: "true"
-        {{- end }}
-          # Uncomment these lines to enable prometheus metrics. Since Typha is host-networked,
-          # this opens a port on the host, which may need to be secured.
-          #- name: TYPHA_PROMETHEUSMETRICSENABLED
-          #  value: "true"
-          #- name: TYPHA_PROMETHEUSMETRICSPORT
-          #  value: "9093"
-        {{- if .Values.typha.extraEnvs }}
-          {{- toYaml .Values.typha.extraEnvs | indent 10 }}
-        {{- end }}
-        livenessProbe:
-          httpGet:
-            path: /liveness
-            port: 9098
-            host: localhost
-          periodSeconds: 30
-          initialDelaySeconds: 30
-        securityContext:
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-        readinessProbe:
-          httpGet:
-            path: /readiness
-            port: 9098
-            host: localhost
-          periodSeconds: 10
+        - name: typha
+          image: {{ .Values.typha.image.repo }}:{{ .Values.typha.image.tag | default .Chart.AppVersion }}
+          {{- if .Values.typha.tls.enabled }}
+          volumeMounts:
+            - name: felix-typha-tls
+              mountPath: /etc/felix-typha
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.typha.port | default 5473 }}
+              name: typha
+              protocol: TCP
+          env:
+            {{- if .Values.bpf.enabled }}
+            # Overrides for kubernetes API server host/port. Needed in BPF mode.
+            - name: KUBERNETES_SERVICE_HOST
+              value: {{ .Values.bpf.kubernetesAPI.host | quote }}
+            - name: KUBERNETES_SERVICE_PORT
+              value: {{ .Values.bpf.kubernetesAPI.port | quote }}
+            {{- end }}
+            - name: TYPHA_LOGSEVERITYSCREEN
+              value: {{ .Values.typha.logLevel | default "info" | quote }}
+            # disable file logging
+            - name: TYPHA_LOGFILEPATH
+              value: "none"
+            - name: TYPHA_LOGSEVERITYSYS
+              value: "none"
+            - name: TYPHA_CONNECTIONREBALANCINGMODE
+              value: "kubernetes"
+            - name: TYPHA_DATASTORETYPE
+              value: "kubernetes"
+            - name: TYPHA_HEALTHENABLED
+              value: "true"
+            {{- if .Values.typha.useNodePodCIDR }}
+            - name: USE_POD_CIDR
+              value: "true"
+            {{- end }}
+            {{- if .Values.typha.metrics.enabled }}
+            # Uncomment these lines to enable prometheus metrics. Since Typha is host-networked,
+            # this opens a port on the host, which may need to be secured.
+            - name: TYPHA_PROMETHEUSMETRICSENABLED
+              value: "true"
+            - name: TYPHA_PROMETHEUSMETRICSPORT
+              value: {{ .Values.typha.metrics.port | quote }}
+            {{- end }}
+          {{- if .Values.typha.tls.enabled -}}
+            {{- if and (not .Values.typha.tls.felixURISAN) (not .Values.typha.tls.felixCommonName) -}}
+            {{ fail "must specify at lease one of felixURISAN and felixCommonName" }}
+            {{- end -}}
+            {{- if .Values.typha.tls.felixCommonName }}
+            - name: TYPHA_CLIENTCN
+              value: {{ .Values.typha.tls.felixCommonName }}
+            {{- end }}
+            {{- if .Values.typha.tls.felixURISAN }}
+            - name: TYPHA_CLIENTURISAN
+              value: {{ .Values.typha.tls.felixURISAN }}
+            {{- end }}
+            - name: TYPHA_CAFILE
+              value: /etc/felix-typha/ca.crt
+            - name: TYPHA_SERVERCERTFILE
+              value: /etc/felix-typha/tls.crt
+            - name: TYPHA_SERVERKEYFILE
+              value: /etc/felix-typha/tls.key
+          {{- end }}
+      readinessProbe:
+        httpGet:
+          path: /readiness
+          port: 9098
+          host: localhost
+        periodSeconds: 10
+      livenessProbe:
+        httpGet:
+          path: /liveness
+          port: 9098
+          host: localhost
+        periodSeconds: 30
+        initialDelaySeconds: 30
 {{- end }}

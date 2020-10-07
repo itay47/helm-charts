@@ -1,0 +1,67 @@
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# datastore type: `kubernetes` or `etcd`
+datastore: kubernetes
+
+# etcd configuration if storage set to etcd
+etcd:
+  endpoints: [] # string array
+  # - "etcdhost-1:2379"
+  # - "etcdhost-2:2379"
+  # - "etcdhost-3:2379"
+  tls:
+    enabled: false
+    # pem encoded cert data
+    caCert: ""
+    cert: ""
+    key: ""
+
+typhaService: ""
+
+bpf:
+  enabled: false
+  kubernetesAPI:
+    host: kubernetes.local
+    port: 6443
+
+node:
+  image:
+    repo: docker.io/calico/node
+    tag: ""
+  extraEnvs: []
+  encryption:
+    enabled: true
+  # if Wireguard is enabled, set to your network MTU - 60
+  # set to your network MTU
+  mtu: 1440
+  vxlan:
+    # if VXLAN or BPF mode is enabled, set to your network MTU - 50
+    mtu:
+  ipip:
+    # if IPIP is enabled, set to your network MTU - 20
+    mtu:
+  # https://docs.projectcalico.org/reference/node/configuration#ip-setting
+  bgp:
+    peering:
+      addressAutoDetection:
+        ipv4:
+          method: first-found
+        ipv6:
+          method: first-found
+
+cni:
+  image:
+    repo: docker.io/calico/cni
+    tag: ""
+  # ipam method name, set to
+  #   - calico-ipam
+  #   - host-local to use Node.spec.podCIDR
+  ipam: calico-ipam
+  extraEnvs: []
+
+flexVolumeDriver:
+  image:
+    repo: docker.io/calico/pod2daemon-flexvol
+    tag: ""

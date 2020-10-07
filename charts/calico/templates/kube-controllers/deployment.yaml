@@ -8,7 +8,7 @@ metadata:
     {{- include "calico.kube-controllers.labels" . | nindent 4 }}
 spec:
   # The controllers can only have a single active instance.
-  replicas: {{ .Values.kubeControllers.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "calico.kube-controllers.selectorLabels" . | nindent 6 }}
@@ -19,74 +19,35 @@ spec:
       labels:
         {{- include "calico.kube-controllers.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.kubeControllers.nodeSelector }}
       nodeSelector:
-        kubernetes.io/os: linux
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kubeControllers.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.kubeControllers.tolerations }}
       tolerations:
-        # Mark the pod as a critical add-on for rescheduling.
-        - key: CriticalAddonsOnly
-          operator: Exists
-        - key: node-role.kubernetes.io/master
-          effect: NoSchedule
-      serviceAccountName: calico-kube-controllers
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "calico.kube-controllers.fullname" . }}
       priorityClassName: system-cluster-critical
-{{- if eq .Values.datastore "etcd" }}
-      # The controllers must run in the host network namespace so that
-      # it isn't governed by policy that would prevent it from working.
-      hostNetwork: true
       containers:
-        - name: calico-kube-controllers
-          image: {{ .Values.kubeControllers.image.repo }}:{{ .Values.kubeControllers.image.tag | default .Chart.AppVersion }}
-          env:
-            # The location of the etcd cluster.
-            - name: ETCD_ENDPOINTS
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "variant_name" . | lower }}-config
-                  key: etcd_endpoints
-            # Location of the CA certificate for etcd.
-            - name: ETCD_CA_CERT_FILE
-              value: /calico-secrets/etcd-ca
-            # Location of the client key for etcd.
-            - name: ETCD_KEY_FILE
-              value: /calico-secrets/etcd-key
-            # Location of the client certificate for etcd.
-            - name: ETCD_CERT_FILE
-              value: /calico-secrets/etcd-cert
-            # Choose which controllers to run.
-            - name: ENABLED_CONTROLLERS
-              value: policy,namespace,serviceaccount,workloadendpoint,node
-            {{- if .Values.kubeControllers.extraEnvs }}
-              {{- toYaml .Values.kubeControllers.extraEnvs | indent 12 }}
-            {{- end }}
-          volumeMounts:
-            # Mount in the etcd TLS secrets.
-            - mountPath: /calico-secrets
-              name: etcd-certs
-          readinessProbe:
-            exec:
-              command:
-              - /usr/bin/check-status
-              - -r
-      volumes:
-        # Mount in the etcd TLS secrets with mode 400.
-        # See https://kubernetes.io/docs/concepts/configuration/secret/
-        - name: etcd-certs
-          secret:
-            secretName: calico-etcd-secrets
-            defaultMode: 0400
-{{- else }}
-      containers:
-        - name: calico-kube-controllers
-          image: {{ .Values.kubeControllers.image.repo }}:{{ .Values.kubeControllers.image.tag | default .Chart.AppVersion }}
-          env:
-            # Choose which controllers to run.
-            - name: ENABLED_CONTROLLERS
-              value: node
-            - name: DATASTORE_TYPE
-              value: kubernetes
-          readinessProbe:
-            exec:
-              command:
-              - /usr/bin/check-status
-              - -r
-{{- end }}
+      - name: kube-controllers
+        image: {{ .Values.kubeControllers.image.repo }}:{{ .Values.kubeControllers.image.tag | default .Chart.AppVersion }}
+        env:
+        # kubernetes datastore only supports node controller
+        - name: ENABLED_CONTROLLERS
+          value: node
+        - name: LOG_LEVEL
+          value: {{ .Values.kubeControllers.logLevel | default "info" | quote }}
+        - name: DATASTORE_TYPE
+          value: kubernetes
+        - name: AUTO_HOST_ENDPOINTS
+          value: "enabled"
+        readinessProbe:
+          exec:
+            command:
+            - /usr/bin/check-status
+            - -r
