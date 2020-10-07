@@ -4,6 +4,8 @@ yaml-files:
 
 ignore: |
   build/
+  charts/**/crds/
+  charts/**/templates/
 
 rules:
   braces:

@@ -1,0 +1,67 @@
+# datastore type: `kubernetes` or `etcd`
+datastore: kubernetes
+
+# etcd configuration if storage set to etcd
+etcd:
+  endpoints: [] # string array
+  # - "etcdhost-1:2379"
+  # - "etcdhost-2:2379"
+  # - "etcdhost-3:2379"
+  tls:
+    enabled: false
+    # pem encoded cert data
+    caCert: ""
+    cert: ""
+    key: ""
+
+kubeControllers:
+  image:
+    repo: docker.io/calico/kube-controllers
+    tag: v3.16.2
+  replicas: 1
+  extraEnvs: []
+  # - name: foo
+  #   value: bar
+
+typha:
+  enabled: false
+  image:
+    repo: docker.io/calico/typha
+    tag: v3.16.2
+  replicas: 1
+  logLevel: info # debug, info
+  extraEnvs: []
+  # - name: foo
+  #   value: bar
+
+node:
+  image:
+    repo: docker.io/calico/node
+    tag: v3.16.2
+  extraEnvs: []
+  # https://docs.projectcalico.org/reference/node/configuration#ip-setting
+  autodetection:
+    ipv4:
+      method:
+
+cni:
+  image:
+    repo: docker.io/calico/cni
+    tag: v3.16.2
+  ipam: "" # host-local or none
+  extraEnvs: []
+
+flexVolumeDriver:
+  image:
+    repo: docker.io/calico/pod2daemon-flexvol
+    tag: v3.16.2
+
+# Pod IPs will be chosen from following pools
+podIPPools:
+- name: default-ipv4-ippool
+  cidr: 172.16.0.0/16
+  blockSize: 26
+  ipipMode: CrossSubnet
+  vxlanMode: Never
+  nodeSelector: all()
+  natOutgoing: true
