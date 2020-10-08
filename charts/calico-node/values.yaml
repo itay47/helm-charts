@@ -47,18 +47,18 @@ node:
   iptables:
     # one of [Legacy, NFT, Auto]
     backend: Legacy
-    # Mask that Felix selects its IPTables Mark bits from. 
-    # Should be a 32 bit hexadecimal number with at least 8 bits set, 
-    # none of which clash with any other mark bits in use on the system. 
+    # Mask that Felix selects its IPTables Mark bits from.
+    # Should be a 32 bit hexadecimal number with at least 8 bits set,
+    # none of which clash with any other mark bits in use on the system.
     # When using Calico with Kubernetes’ kube-proxy in IPVS mode, we recommend allowing at least 16 bits.
     markMask: "0xffff0000"
     # Port range used by iptables for port mapping when doing outgoing NAT. (Example: 32768:65000).
-    # 
-    # Default: iptables maps source ports below 512 to other ports below 512: 
-    #          those between 512 and 1023 inclusive will be mapped to ports below 1024, 
+    #
+    # Default: iptables maps source ports below 512 to other ports below 512:
+    #          those between 512 and 1023 inclusive will be mapped to ports below 1024,
     #          and other ports will be mapped to 1024 or above. Where possible, no port alteration will occur.
     natPortRange: ""
-    # This parameter can be used to limit the host interfaces on which Calico will apply SNAT to traffic 
+    # This parameter can be used to limit the host interfaces on which Calico will apply SNAT to traffic
     # leaving a Calico IPAM pool with "NAT outgoing" enabled.
     #
     # This can be useful if you have a main data interface, where traffic should be SNATted and a secondary
@@ -66,8 +66,9 @@ node:
     #
     # This parameter uses the iptables interface matching syntax, which allows + as a wildcard.
     # Most users will not need to set this.
-    # 
-    # Example: if your data interfaces are eth0 and eth1 and you want to exclude the docker bridge, you could set this to eth+
+    #
+    # Example: if your data interfaces are eth0 and eth1 and you want to exclude the docker bridge
+    # you could set this to eth+
     natOutgoingInterfaceFilter: ""
 
   encryption:
