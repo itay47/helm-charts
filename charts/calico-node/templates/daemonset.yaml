@@ -42,6 +42,13 @@ spec:
         - name: upgrade-ipam
           image: {{ .Values.cni.image.repo }}:{{ .Values.cni.image.tag | default .Chart.AppVersion }}
           command: ["/opt/cni/bin/calico-ipam", "-upgrade"]
+          volumeMounts:
+            - mountPath: /var/lib/cni/networks
+              name: host-local-net-dir
+            - mountPath: /host/opt/cni/bin
+              name: cni-bin-dir
+          securityContext:
+            privileged: true
           env:
           {{- if .Values.bpf.enabled }}
             # Overrides for kubernetes API server host/port. Needed in BPF mode.
@@ -56,26 +63,19 @@ spec:
                   fieldPath: spec.nodeName
             - name: CALICO_NETWORKING_BACKEND
               value: bird
-          volumeMounts:
-            - mountPath: /var/lib/cni/networks
-              name: host-local-net-dir
-            - mountPath: /host/opt/cni/bin
-              name: cni-bin-dir
-          securityContext:
-            privileged: true
         # This container installs the CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
           image: {{ .Values.cni.image.repo }}:{{ .Values.cni.image.tag | default .Chart.AppVersion }}
           command: ["/opt/cni/bin/install"]
           env:
-          {{- if .Values.bpf.enabled }}
+            {{- if .Values.bpf.enabled }}
             # Overrides for kubernetes API server host/port. Needed in BPF mode.
             - name: KUBERNETES_SERVICE_HOST
               value: {{ .Values.bpf.kubernetesAPI.host | quote }}
             - name: KUBERNETES_SERVICE_PORT
               value: {{ .Values.bpf.kubernetesAPI.port | quote }}
-          {{- end }}
+            {{- end }}
             # Name of the CNI config file to create.
             - name: CNI_CONF_NAME
               value: "10-calico.conflist"
@@ -115,21 +115,13 @@ spec:
           securityContext:
             privileged: true
       containers:
-        # Runs {{ include "calico-node.fullname" . }} container on each Kubernetes node. This
-        # container programs network policy and routes on each
-        # host.
-        - name: calico-node
+        - name: node
           image: {{ .Values.node.image.repo }}:{{ .Values.node.image.tag | default .Chart.AppVersion }}
-          envFrom:
-          - configMapRef:
-              # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden for eBPF mode.
-              name: kubernetes-services-endpoint
-              optional: true
           env:
             # do not create default IPPool
             - name: NO_DEFAULT_POOLS
               value: "true"
-          {{- if .Values.bpf.enabled }}
+            {{- if .Values.bpf.enabled }}
             # Overrides for kubernetes API server host/port. Needed in BPF mode.
             - name: KUBERNETES_SERVICE_HOST
               value: {{ .Values.bpf.kubernetesAPI.host | quote }}
@@ -138,54 +130,52 @@ spec:
             # Actually enable BPF mode.
             - name: FELIX_BPFENABLED
               value: "true"
-          {{- end }}
+            - name: FELIX_BPFLOGLEVEL
+              value: {{ .Values.bpf.logLevel | default "off" | quote }}
+            - name: FELIX_BPFDATAIFACEPATTERN
+              value: {{ .Values.bpf.matchInterface | default "^(en.*|eth.*|tunl0$)" | quote }}
+            - name: FELIX_BPFEXTERNALSERVICEMODE
+              value: {{ .Values.bpf.externalServiceMode | default "Tunnel" | quote }}
+            - name: FELIX_BPFKUBEPROXYENDPOINTSLICESENABLED
+              value: {{ .Values.bpf.enableEndpointSlice | default "false" | quote }}
+            {{- end }}
+            - name: FELIX_KUBENODEPORTRANGES
+              value: {{ .Values.node.nodePortRanges | join "," | default "30000:32767" | quote }}
             - name: DATASTORE_TYPE
               value: "kubernetes"
-            {{- if eq .Values.cni.ipam "host-local" }}
+            {{- if .Values.node.useNodePodCIDR }}
             # Configure route aggregation based on pod CIDR.
             - name: USE_POD_CIDR
               value: "true"
             {{- end }}
-            {{- if .Values.typhaService }}
-            # Typha support: controlled by the ConfigMap.
+            {{- with .Values.felix.typha }}
             - name: FELIX_TYPHAK8SSERVICENAME
-              value: {{ .Values.typhaService }}
+              value: {{ .name }}
+            - name: FELIX_TYPHAK8SNAMESPACE
+              value: {{ .namespace | default $.Release.Namespace }}
             {{- end }}
             - name: WAIT_FOR_DATASTORE
               value: "true"
-            # Set based on the k8s node name.
             - name: NODENAME
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-            # Choose the backend to use.
             - name: CALICO_NETWORKING_BACKEND
               value: bird
-            # Cluster type to identify the deployment type
             - name: CLUSTER_TYPE
               value: "k8s,bgp"
-            # Auto-detect the BGP IP address.
             - name: IP
               value: "autodetect"
-            # {{- if .Values.bpf }} For best performance, disable {{- else }} Enable {{- end }} IPIP
-            - name: CALICO_IPV4POOL_IPIP
-              value: "{{- if .Values.bpf -}} Never {{- else if .Values.vxlan -}} Never {{- else -}} Always {{- end -}}"
-            # Enable or Disable VXLAN on the default IP pool.
-            - name: CALICO_IPV4POOL_VXLAN
-              value: "{{- if .Values.vxlan -}} Always {{- else -}} Never {{- end -}}"
-            # Set MTU for tunnel device used if ipip is enabled
             - name: FELIX_IPINIPMTU
               valueFrom:
                 configMapKeyRef:
                   name: calico-config
                   key: veth_mtu
-            # Set MTU for the VXLAN tunnel device.
             - name: FELIX_VXLANMTU
               valueFrom:
                 configMapKeyRef:
                   name: calico-config
                   key: veth_mtu
-            # Set MTU for the Wireguard tunnel device.
             - name: FELIX_WIREGUARDMTU
               valueFrom:
                 configMapKeyRef:
@@ -196,13 +186,15 @@ spec:
             - name: FELIX_AWSSRCDSTCHECK
               value: Disable
           {{- end }}
-            # Disable file logging so `kubectl logs` works.
             - name: CALICO_DISABLE_FILE_LOGGING
+              value: "true"
+            - name: CALICO_STARTUP_LOGLEVEL
+              value: {{ .Values.node.logLevel | quote }}
+            - name: CALICO_MANAGE_CNI
               value: "true"
             # Set Felix endpoint to host default action to ACCEPT.
             - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
               value: "ACCEPT"
-            # Disable IPv6 on Kubernetes.
             - name: FELIX_IPV6SUPPORT
               value: "false"
             # Set Felix logging to "info"
@@ -210,9 +202,6 @@ spec:
               value: "info"
             - name: FELIX_HEALTHENABLED
               value: "true"
-          {{- if .Values.node.extraEnvs }}
-            {{- toYaml .Values.node.extraEnvs | indent 12 }}
-          {{- end }}
           securityContext:
             privileged: true
           resources:

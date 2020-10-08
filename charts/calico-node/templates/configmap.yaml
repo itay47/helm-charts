@@ -27,9 +27,11 @@ data:
           "nodename": "__KUBERNETES_NODE_NAME__",
           "mtu": __CNI_MTU__,
           "ipam": {
-              "type": "{{ .Values.cni.ipam }}"
-              {{- if eq .Values.cni.ipam "host-local" }},
+              {{- if .Values.node.useNodePodCIDR }}
+              "type": "host-local",
               "subnet": "usePodCidr"
+              {{- else }}
+              "type": "calico-ipam"
               {{- end }}
           },
           "policy": {

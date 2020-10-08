@@ -2,46 +2,76 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
-# datastore type: `kubernetes` or `etcd`
-datastore: kubernetes
-
-# etcd configuration if storage set to etcd
-etcd:
-  endpoints: [] # string array
-  # - "etcdhost-1:2379"
-  # - "etcdhost-2:2379"
-  # - "etcdhost-3:2379"
-  tls:
-    enabled: false
-    # pem encoded cert data
-    caCert: ""
-    cert: ""
-    key: ""
-
-typhaService: ""
-
 bpf:
   enabled: false
   kubernetesAPI:
     host: kubernetes.local
     port: 6443
+  # log level, one of [off, info, debug]
+  logLevel: "off"
+  matchInterface: ^(en.*|eth.*|tunl0$)
+  # one of [Tunnel, DSR]
+  externalServiceMode: Tunnel
+  enableEndpointSlice: false
+
+felix:
+  typha:
+    name: calico-typha
+    namespace: kube-system
+  tls:
+    enabled: false
+    # the Common Name that Typha’s certificate must have
+    #
+    # either typhaCommonName or typhaURISAN will be used if tls enabled
+    typhaCommonName: ""
+    # a SPIFFE string that identifies Typha, all Typha instances should use the same SPIFFE ID
+    # https://github.com/spiffe/spiffe/blob/master/standards/SPIFFE-ID.md#2-spiffe-identity
+    #
+    # either typhaCommonName or typhaURISAN will be used if tls enabled
+    typhaURISAN: spiffe://trust-domain-name/path
+    # pem encoded tls certificate authority for felix tls auth
+    ca: ""
+    # pem encoded tls certificate pair for felix tls auth
+    cert: ""
+    key: ""
 
 node:
   image:
     repo: docker.io/calico/node
     tag: ""
-  extraEnvs: []
+  # DEBUG, INFO, WARNING, ERROR, CRITICAL, or NONE (case-insensitive)
+  logLevel: ERROR
+  nodePortRanges:
+  - 30000:32767
+  useNodePodCIDR: false
+  iptables:
+    # one of [Legacy, NFT, Auto]
+    backend: Legacy
+    # Mask that Felix selects its IPTables Mark bits from. 
+    # Should be a 32 bit hexadecimal number with at least 8 bits set, 
+    # none of which clash with any other mark bits in use on the system. 
+    # When using Calico with Kubernetes’ kube-proxy in IPVS mode, we recommend allowing at least 16 bits.
+    markMask: "0xffff0000"
+    # Port range used by iptables for port mapping when doing outgoing NAT. (Example: 32768:65000).
+    # 
+    # Default: iptables maps source ports below 512 to other ports below 512: 
+    #          those between 512 and 1023 inclusive will be mapped to ports below 1024, 
+    #          and other ports will be mapped to 1024 or above. Where possible, no port alteration will occur.
+    natPortRange: ""
+    # This parameter can be used to limit the host interfaces on which Calico will apply SNAT to traffic 
+    # leaving a Calico IPAM pool with "NAT outgoing" enabled.
+    #
+    # This can be useful if you have a main data interface, where traffic should be SNATted and a secondary
+    # device (such as the docker bridge) which is local to the host and doesn’t require SNAT.
+    #
+    # This parameter uses the iptables interface matching syntax, which allows + as a wildcard.
+    # Most users will not need to set this.
+    # 
+    # Example: if your data interfaces are eth0 and eth1 and you want to exclude the docker bridge, you could set this to eth+
+    natOutgoingInterfaceFilter: ""
+
   encryption:
     enabled: true
-  # if Wireguard is enabled, set to your network MTU - 60
-  # set to your network MTU
-  mtu: 1440
-  vxlan:
-    # if VXLAN or BPF mode is enabled, set to your network MTU - 50
-    mtu:
-  ipip:
-    # if IPIP is enabled, set to your network MTU - 20
-    mtu:
   # https://docs.projectcalico.org/reference/node/configuration#ip-setting
   bgp:
     peering:
@@ -55,11 +85,6 @@ cni:
   image:
     repo: docker.io/calico/cni
     tag: ""
-  # ipam method name, set to
-  #   - calico-ipam
-  #   - host-local to use Node.spec.podCIDR
-  ipam: calico-ipam
-  extraEnvs: []
 
 flexVolumeDriver:
   image:
