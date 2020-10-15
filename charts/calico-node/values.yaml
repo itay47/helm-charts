@@ -38,7 +38,7 @@ felix:
 node:
   image:
     repo: docker.io/calico/node
-    tag: v3.16.2
+    tag: v3.16.3
   # DEBUG, INFO, WARNING, ERROR, CRITICAL, or NONE (case-insensitive)
   logLevel: ERROR
   nodePortRanges:
