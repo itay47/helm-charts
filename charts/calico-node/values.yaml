@@ -90,4 +90,4 @@ cni:
 flexVolumeDriver:
   image:
     repo: docker.io/calico/pod2daemon-flexvol
-    tag: v3.16.2
+    tag: v3.16.3
