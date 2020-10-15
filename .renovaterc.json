@@ -5,11 +5,13 @@
   "packageRules": [
     {
       "managers": ["helmv3"],
-      "datasources": ["helm"]
+      "datasources": ["helm"],
+      "draftPR": true
     },
     {
       "managers": ["helm-values"],
-      "datasources": ["docker"]
+      "datasources": ["docker"],
+      "draftPR": true
     }
   ]
 }
