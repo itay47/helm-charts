@@ -21,4 +21,4 @@ sources:
 - https://github.com/arhat-dev/helm-charts
 version: 0.1.1
 # docker-image: docker.io/calico/kube-controllers
-appVersion: v3.16.2
+appVersion: v3.16.3
