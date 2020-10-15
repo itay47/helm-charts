@@ -1,0 +1,15 @@
+{
+  "extends": ["github>arhat-dev/renovate-presets:general"],
+  "dependencyDashboardHeader": "This issue tracks dependency version upgrades",
+  "enabledManagers": ["helmv3", "helm-values"],
+  "packageRules": [
+    {
+      "managers": ["helmv3"],
+      "datasources": ["helm"]
+    },
+    {
+      "managers": ["helm-values"],
+      "datasources": ["docker"]
+    }
+  ]
+}
