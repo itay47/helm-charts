@@ -1,0 +1,162 @@
+replicaCount: 1
+
+image:
+  repository: docker.io/arhatdev/renovate-server
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: latest
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+rbac:
+  create: true
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+  - host: chart-example.local
+    paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+config:
+  server:
+    log:
+    - level: verbose
+      format: console
+      file: stderr
+
+    webhook:
+      listen: :8080
+      # tls:
+      #   enabled: true
+      #   caCertData: |
+      #     <PEM ENCODED CA CERTS>
+      #   certData: |
+      #     <PEM ENCODED CERTIFICATE>
+      #   keyData: |
+      #     <PEM ENCODED CERTIFICATE KEY>
+    scheduling:
+      delay: 1m
+      cron: 0 3 * * 6
+      timezone: Asia/Hong_Kong
+    executor:
+      kubernetes:
+        jobTTL: 72h
+        kubeClient:
+          fake: false
+          # kubeconfig:
+          rateLimit:
+            # diable rate limit
+            enabled: false
+            qps: 5
+            burst: 10
+
+        renovateImage: docker.io/renovate/renovate:latest
+        renovateImagePullPolicy: Always
+
+  github: []
+  # - git:
+  #     user: My Bot
+  #     email: USERID+USERNAME@users.noreply.github.com
+  #   api:
+  #     baseURL: https://api.github.com/
+  #     oauthToken: <my personal github api token>
+  #     # client:
+  #     #   # proxy:
+  #     #   #   http: ""
+  #     #   #   https: ""
+  #     #   #   noProxy: ""
+  #     #   #   cgi: false
+  #     #   tls:
+  #     #     enabled: false
+  #     #     caCertData: |
+  #     #       <PEM ENCODED CA CERTS>
+  #     #     certData: |
+  #     #       <PEM ENCODED CERTIFICATE>
+  #     #     keyData: |
+  #     #       <PEM ENCODED CERTIFICATE KEY>
+  #     #     serverName: ""
+  #   dashboardIssueTitle: Available dependency upgrades
+  #   webhook:
+  #     path: /github-com
+  #     secret: <my secret for hmac>
+  #   # projects:
+  #   # - name: foo/bar
+  #   #   dashboardIssueTitle: Available foo upgrades
+  #   #   disabled: true
+
+  gitlab: []
+  # - api:
+  #     baseURL: https://gitlab.com/
+  #     oauthToken: <my personal github api token>
+  #     # client:
+  #     #   # proxy:
+  #     #   #   http: ""
+  #     #   #   https: ""
+  #     #   #   noProxy: ""
+  #     #   #   cgi: false
+  #     #   tls:
+  #     #     enabled: false
+  #     #     caCertData: |
+  #     #       <PEM ENCODED CA CERTS>
+  #     #     certData: |
+  #     #       <PEM ENCODED CERTIFICATE>
+  #     #     keyData: |
+  #     #       <PEM ENCODED CERTIFICATE KEY>
+  #     #     serverName: ""
+  #   dashboardIssueTitle: Available dependency upgrades
+  #   webhook:
+  #     path: /gitlab-com
+  #     secret: <my secret for hmac>
+  #   # projects:
+  #   # - name: foo/bar
+  #   #   dashboardIssueTitle: Available foo upgrades
+  #   #   disabled: true
