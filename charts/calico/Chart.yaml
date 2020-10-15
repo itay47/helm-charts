@@ -1,6 +1,18 @@
 apiVersion: v2
 name: calico
-description: BGP only calico helm chart for easy customization
+description: BGP only calico helm chart for Kubernetes
 type: application
 version: 0.1.0
 appVersion: v3.16.2
+maintainers:
+- name: arhat-dev
+  email: dev@arhat.dev
+keywords:
+- kubernetes
+- network
+- calico
+- calico-node
+- bgp
+- plugin
+- cni
+- node

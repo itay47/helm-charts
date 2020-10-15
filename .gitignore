@@ -9,3 +9,5 @@ charts/openproject
 charts/hydra
 charts/kratos
 charts/oathkeeper
+
+.cr-*
