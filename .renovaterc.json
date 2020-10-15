@@ -2,6 +2,18 @@
   "extends": ["github>arhat-dev/renovate-presets:general"],
   "dependencyDashboardHeader": "This issue tracks dependency version upgrades",
   "enabledManagers": ["helmv3", "helm-values"],
+  "regexManagers": [
+    {
+      "fileMatch": ["charts/.+?/values\\.yaml$"],
+      "matchStrings": [
+        "image:\\s+repo: (?<repoName>.*?)\\s+tag: (?<currentValue>.*?)\\s"
+      ],
+      "depNameTemplate": "{{{repoName}}}",
+      "lookupNameTemplate": "{{{repoName}}}",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver"
+    }
+  ],
   "packageRules": [
     {
       "managers": ["helmv3"],
