@@ -12,6 +12,23 @@
       "lookupNameTemplate": "{{{repoName}}}",
       "datasourceTemplate": "docker",
       "versioningTemplate": "semver"
+    },
+    {
+      "fileMatch": ["(^|/)Chart.yaml$"],
+      "matchStrings": [
+        "# docker-image: (?<dockerImage>.*?)\\s+appVersion: (?<currentValue>.*?)\\s"
+      ],
+      "depNameTemplate": "{{dockerImage}}",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "fileMatch": ["(^|/)README.md$"],
+      "matchStrings": [
+        "\\s+|\\s+image.repo\\s+|\\s+string\\s+|\\s+`(?<dockerImage>.*?)`\\s+|\\s+|\\s+",
+        "\\s+|\\s+image.tag\\s+|\\s+string\\s+|\\s+`(?<currentValue>.*?)`\\s+|\\s+|\\s+"
+      ],
+      "depNameTemplate": "{{dockerImage}}",
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
