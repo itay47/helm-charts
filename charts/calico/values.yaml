@@ -23,7 +23,7 @@ typha:
   enabled: true
   image:
     repo: docker.io/calico/typha
-    tag: v3.16.2
+    tag: v3.16.3
   # Number of Typha replicas.
   #
   # We recommend using Typha if you have more than 50 nodes. Above 100 nodes it is essential
