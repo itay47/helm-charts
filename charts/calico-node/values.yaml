@@ -85,7 +85,7 @@ node:
 cni:
   image:
     repo: docker.io/calico/cni
-    tag: v3.16.2
+    tag: v3.16.3
 
 flexVolumeDriver:
   image:
