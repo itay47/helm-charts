@@ -4,6 +4,12 @@
 
 Custom helm charts to ease your life with `Kubernetes`
 
+## Usage
+
+```bash
+helm repo add arhat-dev https://helm-charts.arhat.dev
+```
+
 ## LICENSE
 
 ```txt
