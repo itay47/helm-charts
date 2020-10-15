@@ -63,13 +63,3 @@ typha:
     # pem encoded tls certificate pair for felix tls auth
     cert: ""
     key: ""
-
-# Pod IPs will be chosen from following pools
-podIPPools:
-- name: default-ipv4-ippool
-  cidr: 172.16.0.0/16
-  blockSize: 26
-  ipipMode: CrossSubnet
-  vxlanMode: Never
-  nodeSelector: all()
-  natOutgoing: true
