@@ -2,8 +2,6 @@ apiVersion: v2
 name: calico-node
 description: BGP only calico-node helm chart for Kubernetes
 type: application
-version: 0.1.0
-appVersion: v3.16.2
 maintainers:
 - name: arhat-dev
   email: dev@arhat.dev
@@ -17,3 +15,14 @@ keywords:
 - cni
 - node
 - felix
+icon: https://docs.projectcalico.org/images/felix_icon.png
+home: https://www.projectcalico.org
+sources:
+- https://github.com/projectcalico/node
+- https://github.com/projectcalico/felix
+- https://github.com/projectcalico/cni-plugin
+- https://github.com/projectcalico/pod2daemon
+- https://github.com/arhat-dev/helm-charts
+version: 0.1.1
+# docker-image: docker.io/calico/node
+appVersion: v3.16.2
