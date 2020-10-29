@@ -324,6 +324,34 @@ spec:
               properties:
                 enabled:
                   type: boolean
+                mesh:
+                  properties:
+                    extraAllowedCIDRs:
+                      description: ExtraAllowedCIDRs in addition to pod CIDR(s)
+                      items:
+                        type: string
+                      type: array
+                    firewallMark:
+                      type: integer
+                    interfaceName:
+                      type: string
+                    ipv4Addr:
+                      description: IPv4 address of the mesh interface endpoint (usually
+                        the vpn endpoint address)
+                      type: string
+                    ipv6Addr:
+                      description: IPv6 address of the mesh interface endpoint (usually
+                        the vpn endpoint address)
+                      type: string
+                    mtu:
+                      type: integer
+                    port:
+                      description: ListenPort for receiving traffic from other mesh
+                        members
+                      type: integer
+                    routingTable:
+                      type: integer
+                  type: object
               type: object
             node:
               description: Node related settings for kubernetes node resource
@@ -735,6 +763,17 @@ spec:
           properties:
             hostNode:
               type: string
+            network:
+              properties:
+                meshIPv4Addr:
+                  type: string
+                meshIPv6Addr:
+                  type: string
+                podCIDRv4:
+                  type: string
+                podCIDRv6:
+                  type: string
+              type: object
           type: object
       type: object
   version: v1alpha1
