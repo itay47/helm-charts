@@ -19,6 +19,6 @@ sources:
 - https://github.com/projectcalico/kube-controllers
 - https://github.com/projectcalico/typha
 - https://github.com/arhat-dev/helm-charts
-version: 0.1.2
+version: 0.1.3
 # docker-image: docker.io/calico/kube-controllers
-appVersion: v3.16.3
+appVersion: v3.16.4

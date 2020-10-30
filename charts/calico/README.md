@@ -1,3 +1,3 @@
 # calico
 
-`BGP` only `calico` helm chart
+`BGP` only `calico` controller helm chart
