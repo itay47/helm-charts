@@ -7,7 +7,7 @@ bpf:
 kubeControllers:
   image:
     repo: docker.io/calico/kube-controllers
-    tag: v3.16.5
+    tag: v3.17.0
   affinity: []
   nodeSelector:
     kubernetes.io/os: linux
@@ -23,7 +23,7 @@ typha:
   enabled: true
   image:
     repo: docker.io/calico/typha
-    tag: v3.16.5
+    tag: v3.17.0
   # Number of Typha replicas.
   #
   # We recommend using Typha if you have more than 50 nodes. Above 100 nodes it is essential
