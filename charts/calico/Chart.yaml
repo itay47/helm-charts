@@ -1,6 +1,6 @@
 apiVersion: v2
 name: calico
-description: BGP only calico helm chart for Kubernetes
+description: BGP only calico control plane for Kubernetes
 type: application
 maintainers:
 - name: arhat-dev
@@ -19,6 +19,6 @@ sources:
 - https://github.com/projectcalico/kube-controllers
 - https://github.com/projectcalico/typha
 - https://github.com/arhat-dev/helm-charts
-version: 0.1.4
+version: 0.1.5
 # docker-image: docker.io/calico/kube-controllers
-appVersion: v3.16.5
+appVersion: v3.17.0

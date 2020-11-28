@@ -1,6 +1,6 @@
 apiVersion: v2
 name: calico-node
-description: BGP only calico-node helm chart for Kubernetes
+description: BGP only calico-node for Kubernetes
 type: application
 maintainers:
 - name: arhat-dev
@@ -23,6 +23,6 @@ sources:
 - https://github.com/projectcalico/cni-plugin
 - https://github.com/projectcalico/pod2daemon
 - https://github.com/arhat-dev/helm-charts
-version: 0.1.4
+version: 0.1.5
 # docker-image: docker.io/calico/node
-appVersion: v3.16.5
+appVersion: v3.17.0
