@@ -38,7 +38,7 @@ felix:
 node:
   image:
     repo: docker.io/calico/node
-    tag: v3.17.0
+    tag: v3.17.1
   # DEBUG, INFO, WARNING, ERROR, CRITICAL, or NONE (case-insensitive)
   logLevel: ERROR
   nodePortRanges:
@@ -85,9 +85,9 @@ node:
 cni:
   image:
     repo: docker.io/calico/cni
-    tag: v3.17.0
+    tag: v3.17.1
 
 flexVolumeDriver:
   image:
     repo: docker.io/calico/pod2daemon-flexvol
-    tag: v3.17.0
+    tag: v3.17.1
