@@ -1,5 +1,5 @@
 bpf:
-  enabled: true
+  enabled: false
   kubernetesAPI:
     host: kubernetes.local
     port: 6443
@@ -20,7 +20,7 @@ kubeControllers:
   logLevel: info
 
 typha:
-  enabled: true
+  enabled: false
   image:
     repo: docker.io/calico/typha
     tag: v3.17.1
