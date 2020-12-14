@@ -1,0 +1,69 @@
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+nodeSelector: {}
+affinity: {}
+tolerations: []
+
+imagePullSecrets: []
+image:
+  repository: docker.io/openidentityplatform/opendj
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "4.4.8"
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  ports:
+    # snmp: 161
+    ldap: 389
+    ldaps: 636
+    # management port for replication (--adminConnectorPort)
+    management: 4444
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+metrics:
+  # enable jmx_exporter
+  enabled: true
+
+persistence:
+  enabled: false
+  storageClass: ""
+  capacity: 15Gi
+
+config:
+  ldap:
+    baseDN: dc=example,dc=com
+    admin:
+      userDN: cn=admin
+      password: ""
+  replication:
+    enabled: false
+    # master: master.opendj.example.com
+    # simple - standard replication
+    # srs - standalone replication servers
+    # sdsr - Standalone Directory Server Replicas
+    # rg - Replication Groups
+    mode: simple

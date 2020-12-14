@@ -2,12 +2,8 @@
 /.vscode
 
 /build
+/private
 
 *coverage*
-
-charts/openproject
-charts/hydra
-charts/kratos
-charts/oathkeeper
 
 .cr-*
