@@ -6,6 +6,7 @@ ignore: |
   build/
   charts/**/crds/
   charts/**/templates/
+  private/
 
 rules:
   braces:
