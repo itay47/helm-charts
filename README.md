@@ -1,6 +1,6 @@
 # helm-charts
 
-[![CI](https://github.com/arhat-dev/template-repo/workflows/CI/badge.svg)](https://github.com/arhat-dev/template-repo/actions?query=workflow%3ACI)
+[![CI](https://github.com/arhat-dev/helm-charts/workflows/CI/badge.svg)](https://github.com/arhat-dev/helm-charts/actions?query=workflow%3ACI)
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/arhatdev)](https://artifacthub.io/packages/search?repo=arhatdev)
 
 Custom helm charts to ease your life with `Kubernetes`
