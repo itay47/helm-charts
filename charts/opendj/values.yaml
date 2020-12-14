@@ -14,7 +14,7 @@ image:
   repository: docker.io/openidentityplatform/opendj
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "4.4.8"
+  tag: "4.4.8" # yamllint disable-line rule:quoted-strings
 
 podSecurityContext: {}
   # fsGroup: 2000
