@@ -17,4 +17,4 @@ sources:
 - https://github.com/arhat-dev/helm-charts
 version: 0.0.1
 # docker-image: docker.io/openidentityplatform/opendj
-appVersion: 4.4.8
+appVersion: 4.4.9
