@@ -1,0 +1,21 @@
+apiVersion: v2
+name: eclipse-che
+description: Customizable helm chart for eclipse che
+type: application
+maintainers:
+- name: arhat-dev
+  email: dev@arhat.dev
+keywords:
+- kubernetes
+- eclipse
+- devfile-registry
+- plugin-registry
+- che
+icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+home: https://www.eclipse.org/che/
+sources:
+- https://github.com/eclipse-che/che-server
+- https://github.com/arhat-dev/helm-charts
+version: 0.1.0
+# docker-image: quay.io/eclipse/che-server
+appVersion: 7.31.2

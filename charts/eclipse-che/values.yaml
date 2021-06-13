@@ -1,0 +1,672 @@
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# che-server
+server:
+  enabled: true
+  replicaCount: 1
+
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  image:
+    repository: quay.io/eclipse/che-server
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+  # configure che-server using environment variables
+  # Ref: https://www.eclipse.org/che/docs/che-7/installation-guide/advanced-configuration-options-for-the-che-server-component/
+  env:
+  # - name: OPENSHIFT_KUBE_PING_NAMESPACE
+  #   valueFrom:
+  #     fieldRef:
+  #       fieldPath: metadata.namespace
+  - name: KUBERNETES_NAMESPACE
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.namespace
+
+  - name: CHE_LOCAL_CONF_DIR
+    value: /etc/conf
+
+  # admin
+  - name: CHE_SYSTEM_ADMIN__NAME
+    value: admin
+  - name: CHE_SYSTEM_SUPER__PRIVILEGED__MODE
+    value: "false"
+
+  # core options
+  # # websocket
+  # - name: CHE_CORE_JSONRPC_PROCESSOR__MAX__POOL__SIZE
+  #   value: "50"
+  # - name: CHE_CORE_JSONRPC_PROCESSOR__CORE__POOL__SIZE
+  #   value: "5"
+  # - name: CHE_CORE_JSONRPC_PROCESSOR__QUEUE__CAPACITY
+  #   value: "100000"
+
+  # # database settings for multi-user mode
+  # - name: CHE_JDBC_USERNAME
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: my-pg-db-secret
+  #       key: username
+  # - name: CHE_JDBC_PASSWORD
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: my-pg-db-secret
+  #       key: password
+  # - name: CHE_JDBC_URL
+  #   value: jdbc:postgresql://postgres:5432/dbche
+  # - name: CHE_JDBC_MAX__TOTAL
+  #   value: "20"
+  # - name: CHE_JDBC_MAX__IDLE
+  #   value: "2"
+  # - name: CHE_JDBC_MAX__WAIT__MILLIS
+  #   value: "-1"
+
+  # - name: SCHEDULE_CORE__POOL__SIZE
+  #   value: "10"
+  # - name: DB_SCHEMA_FLYWAY_BASELINE_ENABLED
+  #   value: "true"
+  # - name: DB_SCHEMA_FLYWAY_BASELINE_VERSION
+  #   value: "5.0.0.8.1"
+  # - name: DB_SCHEMA_FLYWAY_SCRIPTS_PREFIX
+  #   value: ""
+  # - name: DB_SCHEMA_FLYWAY_SCRIPTS_SUFFIX
+  #   value: .sql
+  # - name: DB_SCHEMA_FLYWAY_SCRIPTS_VERSION__SEPARATOR
+  #   value: "__"
+  # - name: DB_SCHEMA_FLYWAY_SCRIPTS_LOCATIONS
+  #   value: classpath:che-schema
+  # # serving
+  # - name: CHE_SERVER_SECURE__EXPOSER
+  #   value: "jwtproxy"
+  # - name: CHE_SERVER_SECURE__EXPOSER_JWTPROXY_TOKEN_ISSUER
+  #   value: "wsmaster"
+  # - name: CHE_SERVER_SECURE__EXPOSER_JWTPROXY_TOKEN_TTL
+  #   value: "8800h"
+  # - name: CHE_SERVER_SECURE__EXPOSER_JWTPROXY_AUTH_LOADER_PATH
+  #   value: "/_app/loader.html"
+  # - name: CHE_SERVER_SECURE__EXPOSER_JWTPROXY_IMAGE
+  #   value: "quay.io/eclipse/che-jwtproxy:0.10.0"
+  # - name: CHE_SERVER_SECURE__EXPOSER_JWTPROXY_MEMORY__REQUEST
+  #   value: "15mb"
+  # - name: CHE_SERVER_SECURE__EXPOSER_JWTPROXY_MEMORY__LIMIT
+  #   value: "128mb"
+  # - name: CHE_SERVER_SECURE__EXPOSER_JWTPROXY_CPU__REQUEST
+  #   value: "0.03"
+  # - name: CHE_SERVER_SECURE__EXPOSER_JWTPROXY_CPU__LIMIT
+  #   value: "0.5"
+
+  # # defaulting
+  # - name: CHE_FACTORY_DEFAULT__PLUGINS
+  #   value: redhat/vscode-commons/latest
+  # - name: CHE_FACTORY_DEFAULT__DEVFILE__FILENAMES
+  #   value: devfile.yaml,.devfile.yaml
+  # - name: CHE_FACTORY_DEFAULT__EDITOR
+  #   value: eclipse/che-theia/latest
+
+  # # integration
+  # - name: CHE_INTEGRATION_BITBUCKET_SERVER__ENDPOINTS
+  #   value: ""
+  # - name: CHE_INTEGRATION_GITLAB_SERVER__ENDPOINTS
+  #   value: ""
+
+  # logging
+  - name: CHE_LOGS_DIR
+    value: /data/logs
+  - name: CHE_LOG_LEVEL
+    value: INFO
+  - name: CHE_LOGGER_CONFIG
+    value: ""
+  - name: CHE_LOGS_APPENDERS_IMPL
+    value: plaintext
+  - name: CHE_DEBUG_SERVER
+    value: "true"
+
+  # multi-user mode requires oauth integration
+  - name: CHE_MULTIUSER
+    value: "false"
+  - name: CHE_OAUTH_SERVICE__MODE
+    value: delegated
+
+  # # keycloak
+  # - name: CHE_KEYCLOAK_REALM
+  #   value: ""
+  # - name: CHE_KEYCLOAK_CLIENT__ID
+  #   value: ""
+  # - name: CHE_KEYCLOAK_AUTH__SERVER__URL
+  #   value: https://keycloak.example.com/auth
+  # - name: CHE_KEYCLOAK_AUTH__INTERNAL__SERVER__URL
+  #   value: http://keycloak.internal:5050/auth
+  # - name: CHE_KEYCLOAK_OSO_ENDPOINT
+  #   value: ""
+  # - name: CHE_KEYCLOAK_GITHUB_ENDPOINT
+  #   value: ""
+  # - name: CHE_KEYCLOAK_ALLOWED__CLOCK__SKEW__SEC
+  #   value: "3"
+  # - name: CHE_KEYCLOAK_USE__NONCE
+  #   value: "true"
+  # - name: CHE_KEYCLOAK_JS__ADAPTER__URL
+  #   value: ""
+  # - name: CHE_KEYCLOAK_OIDC__PROVIDER
+  #   value: ""
+  # - name: CHE_KEYCLOAK_USE__FIXED__REDIRECT__URLS
+  #   value: "false"
+  # - name: CHE_KEYCLOAK_USERNAME__CLAIM
+  #   value: ""
+  # - name: CHE_KEYCLOAK_CASCADE__USER__REMOVAL__ENABLED
+  #   value: "false"
+  # - name: CHE_KEYCLOAK_ADMIN__USERNAME
+  #   value: ""
+  # - name: CHE_KEYCLOAK_ADMIN__PASSWORD
+  #   value: ""
+  # - name: CHE_KEYCLOAK_USERNAME_REPLACEMENT__PATTERNS
+  #   value: ""
+
+  # # github oauth
+  # - name: CHE_OAUTH_GITHUB_CLIENTID
+  #   value: ""
+  # - name: CHE_OAUTH_GITHUB_CLIENTSECRET
+  #   value: ""
+  # - name: CHE_OAUTH_GITHUB_AUTHURI
+  #   value: https://github.com/login/oauth/authorize
+  # - name: CHE_OAUTH_GITHUB_TOKENURI
+  #   value: https://github.com/login/oauth/access_token
+  # - name: CHE_OAUTH_GITHUB_REDIRECTURIS
+  #   value: http://localhost:80/api/oauth/callback
+
+  # # openshift oauth
+  # - name: CHE_OAUTH_OPENSHIFT_CLIENTID
+  #   value: ""
+  # - name: CHE_OAUTH_OPENSHIFT_CLIENTSECRET
+  #   value: ""
+  # - name: CHE_OAUTH_OPENSHIFT_OAUTH__ENDPOINT
+  #   value: ""
+  # - name: CHE_OAUTH_OPENSHIFT_VERIFY__TOKEN__URL
+  #   value: ""
+  # - name: CHE_INFRA_OPENSHIFT_OAUTH__IDENTITY__PROVIDER
+  #   value: ""
+
+  # # bitbucket oauth
+  # - name: CHE_OAUTH1_BITBUCKET_CONSUMERKEYPATH
+  #   value: ""
+  # - name: CHE_OAUTH1_BITBUCKET_PRIVATEKEYPATH
+  #   value: ""
+  # - name: CHE_OAUTH1_BITBUCKET_ENDPOINT
+  #   value: ""
+
+  # # cors
+  # - name: CHE_CORS_ENABLED
+  #   value: "false"
+  # - name: CHE_CORS_ALLOW__CREDENTIALS
+  #   value: "false"
+  # - name: CHE_CORS_ALLOWED__ORIGINS
+  #   value: "*"
+
+  # metrics
+  - name: CHE_METRICS_ENABLED
+    value: "true"
+
+  # tracing
+  - name: CHE_TRACING_ENABLED
+    value: "false"
+  # - name: JAEGER_ENDPOINT
+  #   value: http://jaeger-collector:14268/api/traces
+  # - name: JAEGER_SERVICE_NAME
+  #   value: che-server
+  # - name: JAEGER_SAMPLER_MANAGER_HOST_PORT
+  #   value: jaeger:5778
+  # - name: JAEGER_SAMPLER_TYPE
+  #   value: const
+  # - name: JAEGER_SAMPLER_PARAM
+  #   value: "1"
+  # - name: JAEGER_REPORTER_MAX_QUEUE_SIZE
+  #   value: "10000"
+
+  # # select your infrastructure, openshift or kubernetes
+  - name: CHE_INFRASTRUCTURE_ACTIVE
+    value: kubernetes
+
+  # # openshift
+  # - name: CHE_INFRA_OPENSHIFT_TRUSTED__CA_DEST__CONFIGMAP__LABELS
+  #   value: "config.openshift.io/inject-trusted-cabundle=true"
+  # - name: CHE_INFRA_OPENSHIFT_ROUTE_LABELS
+  #   value: ""
+  # - name: CHE_INFRA_OPENSHIFT_ROUTE_HOST_DOMAIN__SUFFIX
+  #   value: ""
+
+  # # kubernetes
+  # - name: CHE_INFRA_KUBERNETES_MASTER__URL
+  #   value: ""
+  # - name: CHE_INFRA_KUBERNETES_ASYNC_STORAGE_IMAGE
+  #   value: "quay.io/eclipse/che-workspace-data-sync-storage:0.0.1"
+  # - name: CHE_INFRA_KUBERNETES_ASYNC_STORAGE_SHUTDOWN__TIMEOUT__MIN
+  #   value: "120"
+  # - name: CHE_INFRA_KUBERNETES_ASYNC_STORAGE_SHUTDOWN__CHECK__PERIOD__MIN
+  #   value: "30"
+  # - name: CHE_INFRA_KUBERNETES_TLS__ENABLED
+  #   value: "false"
+  # - name: CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_DEVFILE__ENDPOINT__EXPOSURE
+  #   value: multi-host
+  # - name: CHE_INFRA_KUBERNETES_INGRESS_DOMAIN
+  #   value: ""
+  # - name: CHE_INFRA_KUBERNETES_NAMESPACE_CREATION__ALLOWED
+  #   value: "true"
+  # - name: CHE_INFRA_KUBERNETES_NAMESPACE_LABEL
+  #   value: "true"
+  # - name: CHE_INFRA_KUBERNETES_NAMESPACE_LABELS
+  #   value: app.kubernetes.io/part-of=che.eclipse.org,app.kubernetes.io/component=workspaces-namespace
+  # - name: CHE_INFRA_KUBERNETES_NAMESPACE_ANNOTATIONS
+  #   value: che.eclipse.org/username=<username>
+  # - name: CHE_INFRA_KUBERNETES_WORKSPACE__SA__CLUSTER__ROLES
+  #   value: ""
+  # - name: CHE_INFRA_KUBERNETES_INGRESS__START__TIMEOUT__MIN
+  #   value: "5"
+  # - name: CHE_INFRA_KUBERNETES_WORKSPACE__UNRECOVERABLE__EVENTS
+  #   value: FailedMount,FailedScheduling,MountVolume.SetUpfailed,Failed to pull image,FailedCreate,ReplicaSetCreateError
+  # - name: CHE_INFRA_KUBERNETES_INGRESS_LABELS
+  #   value: ""
+  # - name: CHE_INFRA_KUBERNETES_POD_TERMINATION__GRACE__PERIOD__SEC
+  #   value: "0"
+  # - name: CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX
+  #   value: "1000"
+  # - name: CHE_INFRA_KUBERNETES_CLIENT_HTTP_ASYNC__REQUESTS_MAX__PER__HOST
+  #   value: "1000"
+  # - name: CHE_INFRA_KUBERNETES_CLIENT_HTTP_CONNECTION__POOL_MAX__IDLE
+  #   value: "5"
+  # - name: CHE_INFRA_KUBERNETES_CLIENT_HTTP_CONNECTION__POOL_KEEP__ALIVE__MIN
+  #   value: "5"
+  # - name: CHE_INFRA_KUBERNETES_RUNTIMES__CONSISTENCY__CHECK__PERIOD__MIN
+  #   value: "-1"
+  # - name: CHE_INFRA_KUBERNETES_TRUSTED__CA_SRC__CONFIGMAP
+  #   value: ""
+  # - name: CHE_INFRA_KUBERNETES_TRUSTED__CA_DEST__CONFIGMAP
+  #   value: ca-certs
+  # - name: CHE_INFRA_KUBERNETES_TRUSTED__CA_MOUNT__PATH
+  #   value: /public-certs
+  # - name: CHE_INFRA_KUBERNETES_TRUSTED__CA_DEST__CONFIGMAP__LABELS
+  #   value: ""
+  # - name: CHE_INFRA_KUBERNETES_TRUST__CERTS
+  #   value: "false"
+  # - name: CHE_INFRA_KUBERNETES_TLS__SECRET
+  #   value: "che-tls"
+  # - name: CHE_INFRA_KUBERNETES_TLS__CERT
+  #   valueFrom:
+  #     secretKeyRef:
+  #       key: tls.crt
+  #       name: che-tls
+  #       optional: false
+  # - name: CHE_INFRA_KUBERNETES_TLS__KEY
+  #   valueFrom:
+  #     secretKeyRef:
+  #       key: tls.key
+  #       name: che-tls
+  #       optional: false
+  # - name: CHE_INFRA_KUBERNETES_NAMESPACE
+  #   value: <username>-che
+  # - name: CHE_INFRA_KUBERNETES_NAMESPACE_DEFAULT
+  #   value: <username>-che
+  # - name: CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME
+  #   value: che-workspace
+  # - name: CHE_INFRA_KUBERNETES_PVC_ENABLED
+  #   value: "true"
+  # - name: CHE_INFRA_KUBERNETES_PVC_NAME
+  #   value: claim-che-workspace
+  # - name: CHE_INFRA_KUBERNETES_PVC_QUANTITY
+  #   value: 1Gi
+  # - name: CHE_INFRA_KUBERNETES_PVC_JOBS_IMAGE
+  #   value: registry.access.redhat.com/ubi8-minimal:8.3-230
+  # - name: CHE_INFRA_KUBERNETES_PVC_JOBS_IMAGE_PULL__POLICY
+  #   value: IfNotPresent
+  # - name: CHE_INFRA_KUBERNETES_PVC_JOBS_MEMORYLIMIT
+  #   value: 250Mi
+  # - name: CHE_INFRA_KUBERNETES_PVC_ACCESS__MODE
+  #   value: ReadWriteOnce
+  # - name: CHE_INFRA_KUBERNETES_PVC_WAIT__BOUND
+  #   value: "true"
+  # - name: CHE_INFRA_KUBERNETES_PVC_STRATEGY
+  #   value: common
+  # - name: CHE_INFRA_KUBERNETES_PVC_PRECREATE__SUBPATHS
+  #   value: "true"
+  # - name: CHE_INFRA_KUBERNETES_PVC_STORAGE__CLASS__NAME
+  #   value: ""
+  # - name: CHE_INFRA_KUBERNETES_POD_SECURITY__CONTEXT_RUN__AS__USER
+  #   value: "1724"
+  # - name: CHE_INFRA_KUBERNETES_POD_SECURITY__CONTEXT_FS__GROUP
+  #   value: "1724"
+  # - name: CHE_INFRA_KUBERNETES_INGRESS_ANNOTATIONS__JSON
+  #   value: |-
+  #     {
+  #       "kubernetes.io/ingress.class": "nginx",
+  #       "kubernetes.io/tls-acme": "true",
+  #       "nginx.ingress.kubernetes.io/rewrite-target": "/$1",
+  #       "nginx.ingress.kubernetes.io/ssl-redirect": "true",
+  #       "nginx.ingress.kubernetes.io/proxy-connect-timeout": "3600",
+  #       "nginx.ingress.kubernetes.io/proxy-read-timeout": "3600"
+  #     }
+  # - name: CHE_INFRA_KUBERNETES_INGRESS_PATH__TRANSFORM
+  #   value: "%s(.*)"
+  # - name: CHE_INFRA_KUBERNETES_SERVER__STRATEGY
+  #   value: multi-host
+  # - name: CHE_INFRA_KUBERNETES_SINGLEHOST_WORKSPACE_EXPOSURE
+  #   value: native
+  # - name: CHE_INFRA_KUBERNETES_SINGLEHOST_GATEWAY_CONFIGMAP__LABELS
+  #   value: app=che,component=che-gateway-config
+  # - name: CHE_INFRA_KUBERNETES_WORKSPACE__START__TIMEOUT__MIN
+  #   value: "15"
+
+  # # workspace settings
+  # - name: CHE_DEVWORKSPACES_ENABLED
+  #   value: "false"
+  # - name: CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB
+  #   value: ""
+  # - name: CHE_WORKSPACE_PROJECTS_STORAGE
+  #   value: /projects
+  # - name: CHE_WORKSPACE_PROJECTS_STORAGE_DEFAULT_SIZE
+  #   value: 1Gi
+  # - name: CHE_WORKSPACE_LOGS_ROOT__DIR
+  #   value: /workspace_logs
+  # - name: CHE_WORKSPACE_POOL_TYPE
+  #   value: fixed
+  # - name: CHE_WORKSPACE_POOL_EXACT__SIZE
+  #   value: "2"
+  # - name: CHE_WORKSPACE_POOL_CORES__MULTIPLIER
+  #   value: "1"
+  # - name: CHE_WORKSPACE_PROBE__POOL__SIZE
+  #   value: "2"
+  # - name: CHE_WORKSPACE_AUTO_START
+  #   value: "false"
+  # - name: CHE_WORKSPACE_HTTP__PROXY
+  #   value: ""
+  # - name: CHE_WORKSPACE_HTTP__PROXY__JAVA__OPTIONS
+  #   value: ""
+  # - name: CHE_WORKSPACE_HTTPS__PROXY
+  #   value: ""
+  # - name: CHE_WORKSPACE_NO__PROXY
+  #   value: ""
+  # - name: CHE_WORKSPACE_JAVA__OPTIONS
+  #   value: -XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0 -XX:MaxRAM=150m-XX:MaxRAMFraction=2 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom
+  # - name: CHE_WORKSPACE_MAVEN__OPTIONS
+  #   value: -XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0 -XX:MaxRAM=150m-XX:MaxRAMFraction=2 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom
+  # - name: CHE_WORKSPACE_SIDECAR_IMAGE__PULL__POLICY
+  #   value: Always
+  # - name: CHE_WORKSPACE_DEFAULT__CPU__REQUEST__CORES
+  #   value: "-1"
+  # - name: CHE_WORKSPACE_DEFAULT__CPU__LIMIT__CORES
+  #   value: "-1"
+  # - name: CHE_WORKSPACE_DEFAULT__MEMORY__REQUEST__MB
+  #   value: "-1"
+  # - name: CHE_WORKSPACE_DEFAULT__MEMORY__LIMIT__MB
+  #   value: "-1"
+  # - name: CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__REQUEST__CORES
+  #   value: "-1"
+  # - name: CHE_WORKSPACE_SIDECAR_DEFAULT__CPU__LIMIT__CORES
+  #   value: "-1"
+  # - name: CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__REQUEST__MB
+  #   value: "-1"
+  # - name: CHE_WORKSPACE_SIDECAR_DEFAULT__MEMORY__LIMIT__MB
+  #   value: "-1"
+  # - name: CHE_WORKSPACE_ACTIVITY__CHECK__SCHEDULER__PERIOD__S
+  #   value: "60"
+  # - name: CHE_WORKSPACE_ACTIVITY__CLEANUP__SCHEDULER__PERIOD__S
+  #   value: "3600"
+  # - name: CHE_WORKSPACE_ACTIVITY__CLEANUP__SCHEDULER__INITIAL__DELAY__S
+  #   value: "60"
+  # - name: CHE_WORKSPACE_ACTIVITY__CHECK__SCHEDULER__DELAY__S
+  #   value: "180"
+  # - name: CHE_WORKSPACE_CLEANUP__TEMPORARY__INITIAL__DELAY__MIN
+  #   value: "5"
+  # - name: CHE_WORKSPACE_CLEANUP__TEMPORARY__PERIOD__MIN
+  #   value: "180"
+  # - name: CHE_WORKSPACE_SERVER_PING__SUCCESS__THRESHOLD
+  #   value: "1"
+  # - name: CHE_WORKSPACE_SERVER_PING__INTERVAL__MILLISECONDS
+  #   value: "3000"
+  # - name: CHE_WORKSPACE_SERVER_LIVENESS__PROBES
+  #   value: "wsagent/http,exec-agent/http,terminal,theia,jupyter,dirigible,cloud-shell,intellij"
+  # - name: CHE_WORKSPACE_STARTUP__DEBUG__LOG__LIMIT__BYTES
+  #   value: "10485760"
+  # - name: CHE_WORKSPACE_STOP_ROLE_ENABLED
+  #   value: "true"
+  # - name: CHE_WORKSPACE_PLUGIN__BROKER_METADATA_IMAGE
+  #   value: "quay.io/eclipse/che-plugin-metadata-broker:v3.4.0"
+  # - name: CHE_WORKSPACE_PLUGIN__BROKER_ARTIFACTS_IMAGE
+  #   value: "quay.io/eclipse/che-plugin-artifacts-broker:v3.4.0"
+  # - name: CHE_WORKSPACE_PLUGIN__BROKER_DEFAULT__MERGE__PLUGINS
+  #   value: "false"
+  # - name: CHE_WORKSPACE_PLUGIN__BROKER_PULL__POLICY
+  #   value: "Always"
+  # - name: CHE_WORKSPACE_PLUGIN__BROKER_WAIT__TIMEOUT__MIN
+  #   value: "3"
+  # - name: CHE_WORKSPACE_STORAGE_AVAILABLE__TYPES
+  #   value: "persistent,ephemeral,async"
+  # - name: CHE_WORKSPACE_STORAGE_PREFERRED__TYPE
+  #   value: "persistent"
+  # - name: CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR
+  #   value: eclipse/che-theia/latest
+  # - name: CHE_WORKSPACE_DEVFILE_DEFAULT__EDITOR_PLUGINS
+  #   value: ""
+  # - name: CHE_WORKSPACE_PROVISION_SECRET_LABELS
+  #   value: "app.kubernetes.io/part-of=che.eclipse.org,app.kubernetes.io/component=workspace-secret"
+  # - name: CHE_WORKSPACE_DEVFILE_ASYNC_STORAGE_PLUGIN
+  #   value: "eclipse/che-async-pv-plugin/latest"
+  # - name: CHE_WORKSPACE_POD_NODE__SELECTOR
+  #   value: ""
+  # - name: CHE_WORKSPACE_POD_TOLERATIONS__JSON
+  #   value: ""
+  # # set devfile registry urls if you are not going to deploy devfileRegistry
+  # - name: CHE_WORKSPACE_DEVFILE__REGISTRY__URL
+  #   value: ""
+  # - name: CHE_WORKSPACE_DEVFILE__REGISTRY__INTERNAL__URL
+  #   value: ""
+  # # set plugin registry urls if you are not going to deploy pluginRegistry
+  # - name: CHE_WORKSPACE_PLUGIN__REGISTRY__URL
+  #   value: ""
+  # - name: CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL
+  #   value: ""
+
+  # workspace limits
+  # - name: CHE_LIMITS_WORKSPACE_ENV_RAM
+  #   value: 16gb
+  # - name: CHE_LIMITS_WORKSPACE_IDLE_TIMEOUT
+  #   value: "1800000"
+  # - name: CHE_LIMITS_WORKSPACE_RUN_TIMEOUT
+  #   value: "0"
+  # - name: CHE_LIMITS_USER_WORKSPACES_RAM
+  #   value: "-1"
+  # - name: CHE_LIMITS_USER_WORKSPACES_COUNT
+  #   value: "-1"
+  # - name: CHE_LIMITS_USER_WORKSPACES_RUN_COUNT
+  #   value: "1"
+  # - name: CHE_LIMITS_ORGANIZATION_WORKSPACES_RAM
+  #   value: "-1"
+  # - name: CHE_LIMITS_ORGANIZATION_WORKSPACES_COUNT
+  #   value: "-1"
+  # - name: CHE_LIMITS_ORGANIZATION_WORKSPACES_RUN_COUNT
+  #   value: "-1"
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  rbac:
+    create: true
+
+  podSecurityContext:
+    fsGroup: 1724
+
+  securityContext:
+    runAsUser: 1724
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+# che-dashboard
+dashboard:
+  enabled: true
+  replicaCount: 1
+
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  image:
+    repository: quay.io/eclipse/che-dashboard
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+  podSecurityContext: {}
+  securityContext: {}
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /dashboard
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+pluginRegistry:
+  enabled: true
+  replicaCount: 1
+
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  image:
+    repository: quay.io/eclipse/che-plugin-registry
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+  podSecurityContext: {}
+  securityContext: {}
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+devfileRegistry:
+  enabled: true
+  replicaCount: 1
+
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  image:
+    repository: quay.io/eclipse/che-devfile-registry
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+  podSecurityContext: {}
+  securityContext: {}
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
