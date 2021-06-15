@@ -1,0 +1,77 @@
+nodeSelector: {}
+tolerations: []
+affinity: {}
+podAnnotations: {}
+
+replicaCount: 1
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: ghcr.io/arhat-dev/proton-bridge
+  pullPolicy: Always
+  tag: latest
+
+env:
+- name: PUB_KEY
+  valueFrom:
+    secretKeyRef:
+      name: my-secret
+      key: pub.gpg
+- name: SEC_KEY
+  valueFrom:
+    secretKeyRef:
+      name: my-secret
+      key: secret.gpg
+- name: CRED_DIR_NAME
+  valueFrom:
+    secretKeyRef:
+      name: my-secret
+      key: cred_dirname.txt
+- name: CRED_FILE_NAME
+  valueFrom:
+    secretKeyRef:
+      name: my-secret
+      key: cred_filename.txt
+- name: CRED_FILE_CONTENT
+  valueFrom:
+    secretKeyRef:
+      name: my-secret
+      key: cred.gpg
+- name: PROTONMAIL_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: my-secret
+      key: username
+- name: PROTONMAIL_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: my-secret
+      key: password
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  smtp:
+    port: 587
+  imap:
+    port: 143
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi

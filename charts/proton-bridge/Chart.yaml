@@ -1,0 +1,18 @@
+apiVersion: v2
+name: proton-bridge
+description: Helm chart for proton-bridge with automated login & serving process
+type: application
+maintainers:
+- name: arhat-dev
+  email: dev@arhat.dev
+keywords:
+- proton-bridge
+- protonmail
+icon: https://raw.githubusercontent.com/ProtonMail/proton-bridge/master/icon.iconset/icon_256x256%402x.png
+home: https://protonmail.com/
+sources:
+- https://github.com/ProtonMail/proton-bridge
+- https://github.com/arhat-dev/helm-charts
+version: 0.1.0
+# docker-image: ghcr.io/arhat-dev/proton-bridge
+appVersion: latest
