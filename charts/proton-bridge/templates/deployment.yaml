@@ -1,22 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "renovate-server.fullname" . }}
+  name: {{ include "proton-bridge.fullname" . }}
   labels:
-    {{- include "renovate-server.labels" . | nindent 4 }}
+    {{- include "proton-bridge.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
-      {{- include "renovate-server.selectorLabels" . | nindent 6 }}
+      {{- include "proton-bridge.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-    {{- with .Values.podAnnotations }}
+      {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
-    {{- end }}
+      {{- end }}
       labels:
-        {{- include "renovate-server.selectorLabels" . | nindent 8 }}
+        {{- include "proton-bridge.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -24,33 +26,23 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      serviceAccountName: {{ include "renovate-server.serviceAccountName" . }}
-      volumes:
-        - name: config
-          secret:
-            secretName: {{ include "renovate-server.fullname" . }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: bridge
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          tty: true
-          command:
-            - /renovate-server
-            - -c
-            - /etc/renovate-server/config.yaml
-          volumeMounts:
-          - name: config
-            mountPath: /etc/renovate-server
+          {{- with .Values.env }}
           env:
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          tty: true
           ports:
-            - name: http
-              containerPort: {{ include "renovate-server.webhookPort" . }}
+            - name: smtp
+              containerPort: 9587
+              protocol: TCP
+            - name: imap
+              containerPort: 9143
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
