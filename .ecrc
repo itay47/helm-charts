@@ -4,9 +4,9 @@
   "IgnoreDefaults": false,
   "SpacesAftertabs": false,
   "NoColor": false,
-  "Exclude": [],
-  "AllowedContentTypes": [],
-  "PassedFiles": [],
+  "Exclude": [
+    "\\.git/.*", "private/.*"
+  ],
   "Disable": {
     "EndOfLine": false,
     "Indentation": false,
