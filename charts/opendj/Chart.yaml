@@ -15,6 +15,6 @@ home: http://www.openidentityplatform.org
 sources:
 - https://github.com/OpenIdentityPlatform/OpenDJ
 - https://github.com/arhat-dev/helm-charts
-version: 0.0.1
+version: 0.0.2
 # docker-image: docker.io/openidentityplatform/opendj
-appVersion: 4.4.9
+appVersion: 4.4.11
