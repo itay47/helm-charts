@@ -16,6 +16,6 @@ home: https://www.eclipse.org/che/
 sources:
 - https://github.com/eclipse-che/che-server
 - https://github.com/arhat-dev/helm-charts
-version: 0.1.0
+version: 0.1.1
 # docker-image: quay.io/eclipse/che-server
-appVersion: 7.31.2
+appVersion: 7.32.2
