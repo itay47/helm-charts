@@ -1,0 +1,7 @@
+owner: arhat-dev
+git-repo: helm-charts
+charts-repo: https://helm-charts.arhat.dev
+git-base-url: https://api.github.com/
+git-upload-url: https://uploads.github.com/
+skip-existing: true
+pages-branch: gh-pages
