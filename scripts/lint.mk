@@ -15,17 +15,17 @@
 RUN_LINTER := docker run -t --rm -v "$(shell pwd):$(shell pwd)" -w "$(shell pwd)"
 
 lint.file:
-	${RUN_LINTER} mstruebing/editorconfig-checker:2.3.3 ec -config .ecrc
+	${RUN_LINTER} ghcr.io/arhat-dev/editorconfig-checker:2.3.5 /editorconfig-checker -config ./.ecrc
 
 lint.shell:
 	${RUN_LINTER} koalaman/shellcheck-alpine:stable \
-		sh -c "find . | grep -E -e '.sh\$$' | grep -v build | xargs -I'{}' shellcheck -S warning -e SC1090 -e SC1091 {} ;"
+		sh -c "find . | grep -E -e '.sh\$$' | grep -v build | grep -v '\.git' | xargs -I'{}' shellcheck -S warning -e SC1090 -e SC1091 {} ;"
 
 lint.yaml:
-	${RUN_LINTER} arhatdev/yamllint:latest yamllint -c .yaml-lint.yml .
+	${RUN_LINTER} ghcr.io/arhat-dev/yamllint:latest yamllint -c .yaml-lint.yml .
 
 lint.chart:
-	${RUN_LINTER} quay.io/helmpack/chart-testing:v3.3.1 ct --config .chart-testing.yaml lint
+	${RUN_LINTER} quay.io/helmpack/chart-testing:v3.4.0 ct --config .chart-testing.yaml lint
 
 lint.all: \
 	lint.file \
