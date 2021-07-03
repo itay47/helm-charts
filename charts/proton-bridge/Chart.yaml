@@ -13,6 +13,6 @@ home: https://protonmail.com/
 sources:
 - https://github.com/ProtonMail/proton-bridge
 - https://github.com/arhat-dev/helm-charts
-version: 0.1.0
+version: 0.1.1
 # docker-image: ghcr.io/arhat-dev/proton-bridge
-appVersion: latest
+appVersion: v1.8.7
