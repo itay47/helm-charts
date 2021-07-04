@@ -17,7 +17,18 @@ shells:
 
 github:release:
 - name: charts
-  title@template: chart-release-{{ now | date "2006-01-02" }}
+  hooks:
+    before:
+    - shell:bash: |-
+        tag_name="chart-release-${GIT_COMMIT:0:8}"
+        git tag -m "${tag_name}" "${tag_name}"
+        git push origin "${tag_name}"
+  title@template: chart-release-{{ .Env.GIT_COMMIT | substr 0 8 }}
+  tag@template: chart-release-{{ .Env.GIT_COMMIT | substr 0 8 }}
+  notes@env: |-
+    Automated chart release
+
+    for commit ${GIT_COMMIT}
   draft: true
   files:
   - path: .packages/*.tgz
@@ -49,5 +60,5 @@ helm:index:
   repo_url@template: |-
     https://github.com/arhat-dev/helm-charts/releases/
     {{- /* just a comment for multi-line formatting */ -}}
-    download/chart-release-{{ now | date "2006-01-02" }}/
+    download/chart-release-{{ .Env.GIT_COMMIT | substr 0 8 }}/
   merge: ./index.yaml
