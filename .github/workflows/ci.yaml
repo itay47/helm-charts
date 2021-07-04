@@ -43,15 +43,13 @@ jobs:
     - name: Fetch history
       run: git fetch --prune --unshallow
 
-    - name: Configure git
-      run: |
+    - name: Release Chart
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |-
         git config --global user.email '72795724+arhatbot@users.noreply.github.com'
         git config --global user.name 'Arhat Bot'
 
-    - name: Run chart-releaser
-      uses: helm/chart-releaser-action@v1.0.0
-      with:
-        charts_dir: charts
-        config: .chart-releasing.yaml
-      env:
-        CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        dukkha helm package charts
+        dukkha helm index charts
+        dukkha github release charts
