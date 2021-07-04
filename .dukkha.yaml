@@ -42,8 +42,5 @@ helm:index:
     - shell: git switch ${GIT_BRANCH}
 
   packages_dir: *pkg_dir
-  repo_url: https://helm-charts.arhat.dev
-  package_base_url@template: |-
-    https://github.com/arhat-dev/helm-charts/releases/download/chart-release-{{ now | date "2006-01-02" }}/
-  output: ./index.yaml
-
+  repo_url: https://github.com/arhat-dev/helm-charts/releases/download/chart-release-{{ now | date "2006-01-02" }}/
+  merge: ./index.yaml
