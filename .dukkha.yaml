@@ -47,7 +47,9 @@ helm:index:
     - shell: git switch gh-pages
     after:success:
     - shell: |-
-        mv .packages/index.yaml ./index.yaml
+        cat .packages/index.yaml
+        sudo mv .packages/index.yaml ./index.yaml
+
         git add ./index.yaml
         git commit -m "chore: Update chart index"
         git push
