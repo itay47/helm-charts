@@ -17,7 +17,7 @@ shells:
 
 github:release:
 - name: charts
-  title: chart-release-{{ now | date "2006-01-02" }}
+  title@template: chart-release-{{ now | date "2006-01-02" }}
   draft: true
   files:
   - path: .packages/*.tgz
@@ -36,11 +36,18 @@ helm:index:
     - shell: git switch gh-pages
     after:success:
     - shell: |-
+        mv .packages/index.yaml ./index.yaml
         git add ./index.yaml
         git commit -m "chore: Update chart index"
+        git push
     after:
-    - shell: git switch ${GIT_BRANCH}
+    - shell: |-
+        echo "going back to ${GIT_BRANCH}"
+        git switch ${GIT_BRANCH}
 
   packages_dir: *pkg_dir
-  repo_url: https://github.com/arhat-dev/helm-charts/releases/download/chart-release-{{ now | date "2006-01-02" }}/
+  repo_url@template: |-
+    https://github.com/arhat-dev/helm-charts/releases/
+    {{- /* just a comment for multi-line formatting */ -}}
+    download/chart-release-{{ now | date "2006-01-02" }}/
   merge: ./index.yaml
