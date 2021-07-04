@@ -29,7 +29,7 @@ github:release:
     Automated chart release
 
     for commit ${GIT_COMMIT}
-  draft: true
+  draft: false
   files:
   - path: .packages/*.tgz
 
