@@ -9,4 +9,4 @@
 .cr-*
 
 /.packages
-/.dukkha
+/\.dukkha/*
