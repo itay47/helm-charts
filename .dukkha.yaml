@@ -1,0 +1,49 @@
+tools:
+  github:
+  - name: local
+
+  helm:
+  - name: in-docker
+    cmd:
+    - |-
+      docker run -it --rm \
+        -w $(pwd) \
+        -v $(pwd):$(pwd) \
+        ghcr.io/arhat-dev/helm:v3.6.2 \
+        /helm
+
+shells:
+- name: bash
+
+github:release:
+- name: charts
+  title: chart-release-{{ now | date 2006-01-02 }}
+  draft: true
+  files:
+  - path: .packages/*.tgz
+
+helm:package:
+- name: charts
+  chart: charts/*
+  packages_dir: &pkg_dir .packages
+  signing:
+    enabled: false
+
+helm:index:
+- name: charts
+  hooks:
+    before:
+    - shell: git switch gh-pages
+    after:success:
+    - shell: |-
+        git add ./index.yaml
+        git commit -m "chore: Update chart index"
+    after:
+    - shell: git switch ${GIT_BRANCH}
+
+  packages_dir: *pkg_dir
+  repo_url: https://helm-charts.arhat.dev
+  package_base_url@template: |-
+    https://github.com/arhat-dev/helm-charts/releases/download/chart-release-{{ now | date 2006-01-02 }}/
+  output: ./index.yaml
+
