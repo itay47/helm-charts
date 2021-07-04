@@ -17,7 +17,7 @@ shells:
 
 github:release:
 - name: charts
-  title: chart-release-{{ now | date 2006-01-02 }}
+  title: chart-release-{{ now | date "2006-01-02" }}
   draft: true
   files:
   - path: .packages/*.tgz
@@ -44,6 +44,6 @@ helm:index:
   packages_dir: *pkg_dir
   repo_url: https://helm-charts.arhat.dev
   package_base_url@template: |-
-    https://github.com/arhat-dev/helm-charts/releases/download/chart-release-{{ now | date 2006-01-02 }}/
+    https://github.com/arhat-dev/helm-charts/releases/download/chart-release-{{ now | date "2006-01-02" }}/
   output: ./index.yaml
 
