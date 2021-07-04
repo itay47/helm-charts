@@ -40,6 +40,9 @@ jobs:
     - check
     steps:
     - uses: actions/checkout@v2
+    - name: Fetch history
+      run: git fetch --prune --unshallow
+
     - name: Install dukkha
       run: |-
         mkdir -p "${HOME}/bin"
