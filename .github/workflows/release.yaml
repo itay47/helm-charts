@@ -45,6 +45,6 @@ jobs:
         git config --global user.email '72795724+arhatbot@users.noreply.github.com'
         git config --global user.name 'Arhat Bot'
 
-        dukkha helm package charts
-        dukkha github release charts
-        dukkha helm index charts
+        dukkha helm in-docker package charts
+        dukkha github local release charts
+        dukkha helm in-docker index charts
