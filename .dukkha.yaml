@@ -4,16 +4,43 @@ tools:
 
   helm:
   - name: in-docker
-    cmd:
-    - |-
-      docker run -i --rm \
-        -w $(pwd) \
-        -v $(pwd):$(pwd) \
-        ghcr.io/arhat-dev/helm:v3.6.2 \
-        /helm
+    cmd@env:
+    - docker
+    - run
+    - -i
+    - --rm
+    - -w
+    - $(pwd)
+    - -v
+    - $(pwd):$(pwd)
+    - ghcr.io/arhat-dev/helm:v3.6.2
+    - /helm
+
+  workflow:
+  - name: local
 
 shells:
 - name: bash
+
+workflow:run:
+- name: release-chart-to-github
+  hooks:
+    before:
+    - name: Fetch history
+      shell: git fetch --prune --unshallow
+      continue_on_error: true
+
+    - name: Lint charts
+      shell: make lint.all
+
+    - shell: |-
+        git config --global user.email '72795724+arhatbot@users.noreply.github.com'
+        git config --global user.name 'Arhat Bot'
+
+  jobs:
+  - task: helm:in-docker:package(charts)
+  - task: github:local:release(charts)
+  - task: helm:in-docker:index(charts)
 
 github:release:
 - name: charts
@@ -23,12 +50,14 @@ github:release:
         tag_name="chart-release-${GIT_COMMIT:0:8}"
         git tag -m "${tag_name}" "${tag_name}"
         git push origin "${tag_name}"
+
   title@template: chart-release-{{ .Env.GIT_COMMIT | substr 0 8 }}
   tag@template: chart-release-{{ .Env.GIT_COMMIT | substr 0 8 }}
   notes@env: |-
     Automated chart release
 
     for commit ${GIT_COMMIT}
+
   draft: false
   files:
   - path: .packages/*.tgz
@@ -53,8 +82,9 @@ helm:index:
         git add ./index.yaml
         git commit -m "chore: Update chart index"
         git push
+
     after:
-    - shell: |-
+    - shell@env: |-
         echo "going back to ${GIT_BRANCH}"
         git switch ${GIT_BRANCH}
 
