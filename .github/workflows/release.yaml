@@ -20,13 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Lint
-      run: |
-        make lint.all
-
-    - name: Fetch history
-      run: git fetch --prune --unshallow
-
     - name: Install dukkha
       run: |-
         mkdir -p "${HOME}/bin"
@@ -42,9 +35,4 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        git config --global user.email '72795724+arhatbot@users.noreply.github.com'
-        git config --global user.name 'Arhat Bot'
-
-        dukkha helm in-docker package charts
-        dukkha github local release charts
-        dukkha helm in-docker index charts
+        dukkha workflow local run release-chart-to-github
