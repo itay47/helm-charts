@@ -13,7 +13,8 @@ tools:
     - $(pwd)
     - -v
     - $(pwd):$(pwd)
-    - ghcr.io/arhat-dev/helm:v3.6.2
+    # source(docker): ghcr.io/arhat-dev/helm
+    - ghcr.io/arhat-dev/helm:3.6
     - /helm
 
   workflow:
