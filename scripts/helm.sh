@@ -18,7 +18,10 @@ gen() {
   target="$1"
 
   mkdir -p build
-  helm template "${target}" "./charts/${target}" --include-crds --namespace "${NAMESPACE}" --debug > "build/${target}.yaml"
+  helm template "${target}" "./charts/${target}" \
+    --include-crds \
+    --namespace "${NAMESPACE}" \
+    --debug > "build/${target}.yaml"
 }
 
 CMD=$(printf "%s" "$@" | tr '.' ' ')
