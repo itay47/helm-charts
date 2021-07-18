@@ -17,7 +17,7 @@ tools:
     - $(pwd):$(pwd)
     # source(docker): ghcr.io/arhat-dev/helm
     - ghcr.io/arhat-dev/helm:3.6
-    - /helm
+    - helm
 
   workflow:
   - name: local
