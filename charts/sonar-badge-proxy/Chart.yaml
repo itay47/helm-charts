@@ -1,0 +1,17 @@
+apiVersion: v2
+name: sonar-badge-proxy
+description: Badge proxy for self-hosted sonarqube server
+type: application
+maintainers:
+- name: arhat-dev
+  email: dev@arhat.dev
+keywords:
+- reverse-proxy
+- badge
+- sonarqube
+# icon:
+home: https://github.com/tynn/sonar-badge-proxy
+sources:
+- https://github.com/blink38/sonar-badge-proxy
+version: 0.1.0
+appVersion: d268c004
