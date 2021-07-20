@@ -32,7 +32,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: REMOTE
-              value: {{ .Values.config.sonarqube_endpoint }}
+              value: {{ .Values.config.sonarqube_https_endpoint }}
             - name: PORT
               value: {{ .Values.config.listen_port | toString | quote }}
             - name: METRIC
