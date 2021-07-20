@@ -55,7 +55,7 @@ resources: {}
   #   memory: 128Mi
 
 config:
-  sonarqube_endpoint: http://sonarqube:8080
+  sonarqube_endpoint: sonarqube:9000
   authorization_header_value: BASIC user:pass
   listen_port: 8080
   # token == md5("$PROJECT:$SECRET")
