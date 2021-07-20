@@ -2,6 +2,12 @@ name: release
 
 # yamllint disable-line rule:truthy
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: reason to run this workflow
+        required: false
+        default: test
   check_run:
     types:
     - rerequested
@@ -16,20 +22,24 @@ on:
     - master
 
 jobs:
-  check:
+  release:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Lint
+      run: make lint.all
+
+    - name: Install helm
+      uses: azure/setup-helm@v1
+      with:
+        version: latest
+
     - name: Install dukkha
-      run: |-
-        mkdir -p "${HOME}/bin"
-        echo "${HOME}/bin" >> $GITHUB_PATH
+      uses: arhat-dev/actions-setup-dukkha@master
 
-        docker pull ghcr.io/arhat-dev/dukkha:latest
-        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
-        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
-
-        chmod +x "${HOME}/bin/dukkha"
+    - name: Test Gerneration
+      run: |
+        dukkha workflow local run test-gen
 
     - name: Release Chart
       env:

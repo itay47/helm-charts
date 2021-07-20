@@ -21,14 +21,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Lint
-      run: |
-        make lint.all
+      run: make lint.all
 
     - name: Install helm
       uses: azure/setup-helm@v1
       with:
         version: latest
 
+    - name: Install dukkha
+      uses: arhat-dev/actions-setup-dukkha@master
+
     - name: Test Gerneration
       run: |
-        make gen.all
+        dukkha workflow local run test-gen
