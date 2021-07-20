@@ -5,7 +5,7 @@
   "SpacesAftertabs": false,
   "NoColor": false,
   "Exclude": [
-    "\\.git/.*", "private/.*", "\\.dukkha/.*"
+    "\\.git/.*", "private/.*", "\\.dukkha/.*", "build/.*"
   ],
   "Disable": {
     "EndOfLine": false,

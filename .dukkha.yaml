@@ -26,6 +26,21 @@ shells:
 - name: bash
 
 workflow:run:
+- name: test-gen
+  matrix:
+    chart@shell: |-
+      cd charts
+      find . -mindepth 1 -maxdepth 1 -type d -exec echo '- {}' \;
+  jobs:
+  - shell@template: |-
+      {{ $chart := (.Env.MATRIX_CHART | trimPrefix "./") }}
+      mkdir -p build
+      helm template {{ $chart }} \
+        ./charts/{{ $chart }} \
+        --include-crds \
+        --namespace test-gen \
+        --debug > build/{{ $chart }}.yaml
+
 - name: release-chart-to-github
   hooks:
     before:
