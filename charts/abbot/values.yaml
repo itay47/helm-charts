@@ -1,5 +1,5 @@
 image:
-  repository: docker.io/arhatdev/abbot
+  repository: ghcr.io/arhat-dev/abbot
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
