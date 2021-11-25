@@ -3,8 +3,8 @@ name: opendj
 description: OpenDJ is an LDAPv3 compliant directory service
 type: application
 maintainers:
-- name: arhat-dev
-  email: dev@arhat.dev
+- name: Itay Shechter
+  email: itaylcars@hotmail.com
 keywords:
 - kubernetes
 - database
@@ -14,7 +14,8 @@ icon: https://raw.githubusercontent.com/OpenIdentityPlatform/OpenDJ/master/logo.
 home: http://www.openidentityplatform.org
 sources:
 - https://github.com/OpenIdentityPlatform/OpenDJ
+- https://github.com/itay47/helm-charts/charts/opendj
 - https://github.com/arhat-dev/helm-charts
-version: 0.0.2
+version: 0.0.3
 # docker-image: docker.io/openidentityplatform/opendj
 appVersion: 4.4.11
